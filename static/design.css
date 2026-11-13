@@ -1,8 +1,4 @@
-/* Personal Agent · Light — shared tokens & primitives (v__APP_VERSION__)
-   Canvas #FCFCFC · Ink #191919 (soft-black primary) · Geist (self-hosted, CJK falls back to system)
-   Blue #008CFF / #0049D6 for links & status dots only · Amber for reminders.
-   Text tokens are tuned for WCAG AA (≥ 4.5:1) on every surface they are used on;
-   the vivid hues (--blue, --amber, --success, --error) are for dots, bars and borders. */
+/* Personal Eigent · shared visual tokens and primitives. See DESIGN.md. */
 
 @font-face {
   font-family: "Geist";
@@ -26,41 +22,41 @@
   color-scheme: light;
 
   /* Backgrounds */
-  --bg: #FCFCFC;
+  --bg: #F3F7F8;
   --surface: #FFFFFF;
-  --surface-alt: #FAFAFB;
-  --surface-soft: #F0F0F2;
-  --surface-hover: rgba(25, 25, 25, 0.04);
-  --surface-active: rgba(25, 25, 25, 0.07);
+  --surface-alt: #F7FAFB;
+  --surface-soft: #EAF1F3;
+  --surface-hover: rgba(13, 101, 117, 0.05);
+  --surface-active: rgba(13, 101, 117, 0.09);
 
   /* Borders */
-  --border: #E7E7EA;
-  --border-hover: #C9CDD4;
-  --border-strong: rgba(25, 25, 25, 0.16);
-  --border-control: #8E8E96;
+  --border: #D5E2E5;
+  --border-hover: #A5BFC6;
+  --border-strong: rgba(25, 52, 60, 0.20);
+  --border-control: #7C969E;
 
   /* Text */
-  --text: #191919;
-  --text-secondary: #5F5F66;
-  --text-tertiary: #6B6B73;
-  --text-placeholder: #6B6B73;
+  --text: #19343C;
+  --text-secondary: #52666D;
+  --text-tertiary: #60747B;
+  --text-placeholder: #60747B;
   --text-inverse: #FFFFFF;
   --text-inverse-muted: rgba(255, 255, 255, 0.78);
 
-  /* Accent — 软黑即主色（主 CTA / 用户气泡 / 确认卡） */
-  --accent: #191919;
-  --accent-hover: #0E0E0E;
-  --accent-soft: rgba(25, 25, 25, 0.06);
-  --accent-soft-2: rgba(25, 25, 25, 0.10);
-  --accent-ring: rgba(25, 25, 25, 0.22);
-  --focus-ring: #191919;
+  /* Brand accent — primary actions, links and selected states */
+  --accent: #0D6575;
+  --accent-hover: #084E5C;
+  --accent-soft: #E6F2F4;
+  --accent-soft-2: #CEE7EB;
+  --accent-ring: rgba(13, 101, 117, 0.24);
+  --focus-ring: #0D6575;
 
-  /* Blue — 仅链接与状态点 */
-  --blue: #008CFF;
-  --blue-deep: #0049D6;
-  --blue-soft: rgba(0, 140, 255, 0.08);
+  /* Link and information colors */
+  --blue: #148194;
+  --blue-deep: #0D6575;
+  --blue-soft: #E6F2F4;
   --link: var(--blue-deep);
-  --link-hover: #0038A8;
+  --link-hover: #084E5C;
 
   /* Amber — 提醒 / 缺口 / 暂不可用 */
   --amber: #F59E0B;
@@ -82,12 +78,12 @@
   --info: var(--accent);
   --info-soft: var(--accent-soft);
 
-  /* Radius（12–16 为主） */
+  /* Radius: controls 10–12, cards 20 */
   --radius-tag: 6px;
-  --radius-compact: 8px;
+  --radius-compact: 10px;
   --radius-control: 12px;
-  --radius-card: 16px;
-  --radius-feature: 20px;
+  --radius-card: 20px;
+  --radius-feature: 24px;
   --radius-pill: 9999px;
 
   /* Motion */
@@ -104,14 +100,14 @@
     Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Elevation — border-first, shadows stay quiet */
-  --shadow-hover: 0 4px 16px rgba(23, 24, 26, 0.05);
-  --shadow-raised: 0 8px 24px rgba(25, 25, 25, 0.09);
-  --shadow-modal: 0 24px 48px rgba(15, 15, 20, 0.14);
-  --scrim: rgba(20, 20, 24, 0.42);
+  --shadow-hover: 0 4px 16px rgba(25, 52, 60, 0.05);
+  --shadow-raised: 0 10px 30px rgba(25, 52, 60, 0.09);
+  --shadow-modal: 0 24px 64px rgba(25, 52, 60, 0.16);
+  --scrim: rgba(18, 44, 52, 0.32);
 
   /* Sizing */
-  --control-h-sm: 32px;
-  --control-h: 40px;
+  --control-h-sm: 36px;
+  --control-h: 44px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

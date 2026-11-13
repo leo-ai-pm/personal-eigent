@@ -1,294 +1,189 @@
-<div align="center">
+# Personal Eigent个人助手
 
-# Personal Agent
-
-**有长期记忆的个人助理底座**
-
-陪你聊、记住你说过的事、替你起草、按时提醒。<br>
-任何会产生后果的动作，都先给你一张确认卡。
-
-LangGraph · FastAPI · 原生 JS 前端 · 可二次开发 · MIT
+有长期记忆的个人 AI 助手。通过对话管理个人信息、起草内容、设置提醒，在执行需要确认的任务前展示确认卡。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](Dockerfile)
 [![Version](https://img.shields.io/badge/version-0.8.2-informational.svg)](VERSION)
-[![Deploy to Render](https://img.shields.io/badge/Deploy-Render-46E3B7.svg)](https://render.com/deploy?repo=https://github.com/hubooooooo/Personal-Agent)
 
-[快速开始](#快速开始) · [它能做什么](#它能做什么) · [工作原理](#工作原理) · [多渠道接入](#多渠道接入) · [安全与隐私](#安全与隐私) · [二次开发](#二次开发)
+Python 3.12 · FastAPI · LangGraph · SQLite / PostgreSQL · 原生 JavaScript
 
-</div>
+## 界面预览
 
----
+![Personal Eigent个人助手对话界面](docs/screenshots/home.png)
 
-## 为什么是它
+![Personal Eigent个人助手个人档案](docs/screenshots/profile.png)
 
-市面上的「个人助理」要么是一个聊天框，关掉就忘；要么能力很强，但你不敢把它接进飞书和微信。Personal Agent 想做的是中间那条路：
+界面采用冷白与湖蓝配色，统一对话、个人档案、定时任务、渠道绑定、安全输入区与管理后台的视觉样式。本次更新保留现有布局，以及 Agent 编排、模型调用、记忆存储、身份校验和确认协议。
 
-- **真的记得你。** 姓名、城市、职业、兴趣、偏好和你随口提过的事，会沉淀成一张可查看、可修改、可遗忘的记忆卡，而不是藏在某个向量库里。
-- **先确认，再行动。** 写草稿、建定时任务、调用外部工具，统统先出确认卡。它不会替你发消息、发邮件、提交表单，也不会在聊天里收你的密码和手机号。
-- **一个账号，多个入口。** 网页会话即账号；飞书、微信通过一次性链接绑定到同一份档案和记忆。
-- **安全护栏是内置的，不是贴上去的。** 出站防泄露、隐私脱敏、危机识别、一次性确认凭证、全链路轨迹日志，都有金标回归测试守着。
-- **拿来就能改。** 模型任意厂商可换，工具一个装饰器就能注册，渠道按接口加，[CONTRIBUTING.md](CONTRIBUTING.md) 按改动深度分五层带你入门。
+## 功能
 
-## 它能做什么
+| 能力 | 使用方式 |
+|------|----------|
+| 对话与长期记忆 | 在聊天中告诉助手你的职业、城市、兴趣和偏好；通过记忆卡查看、修改或遗忘记录 |
+| 写作与草稿 | 起草邮件、消息、文章和笔记；确认卡支持确认、修改意见和拒绝后重写 |
+| 提醒与定时任务 | 创建一次性提醒或自定义只读任务；确认后由调度器运行，结果进入应用内收件箱 |
+| 公开信息查询 | 读取公开网页、RSS、搜索和 Hacker News；外部内容作为不可信数据处理 |
+| 多渠道入口 | 可配置飞书长连接、微信 OpenClaw 桥接，绑定后共享档案和记忆 |
+| 隐私与可观测性 | 敏感输入分流、加密保存、出站过滤、脱敏轨迹、管理员访问控制 |
 
-```
-你：我叫小胡，在上海做产品经理，最近在学 Rust。
-助理：记住了。             → 记忆卡：姓名 小胡 · 城市 上海 · 职业 产品经理 · 兴趣 Rust
+可以从这些请求开始：
 
-你：帮我给房东写条消息，说下周三交租要晚两天。
-助理：这是草稿 ……           → 确认卡：确认 / 带修改意见确认 / 拒绝并说明原因（会自动重写）
-
-你：每天早上八点提醒我看一眼 Hacker News 头条。
-助理：要创建这个定时任务吗？ → 确认卡 → 到点结果进应用内收件箱，并推送到已绑定的飞书 / 微信
-
-你：我的支付宝密码是……
-助理：这里不收密码。        → 给你一个网页安全输入区链接，加密保存，从不回显明文
+```text
+我在上海做产品经理，最近在学习 Python，帮我记住。
+帮我起草一封项目进度邮件，语气简洁一些。
+明天下午三点提醒我整理会议记录。
+看看你记住了哪些关于我的信息。
 ```
 
-| 做 | 不做 |
-|----|------|
-| 带记忆的对话；记忆卡上随时查看、修改、遗忘 | 替你对外发消息、发邮件、提交表单 |
-| 写作草稿（邮件 / 消息 / 文章 / 笔记）→ 确认卡 → 定稿 | 在聊天里收账号密码、手机号、身份证 |
-| 一次性提醒、自定义只读定时任务 | 登录任何网站、无人值守操作 |
-| 读公开网页 / RSS / 搜索 / Hacker News 作为**不可信**来源 | 把网页内容当成指令执行 |
-| 危机识别与热线兜底、提示词泄露与隐私护栏 | 把你的数据交给第三方可观测平台（Langfuse 可选、自托管、脱敏后导出） |
+提醒、渠道和向量记忆需要单独配置并开启。没有模型 API Key 时，系统使用离线占位回复，可用于查看流程，不能据此评估真实模型的回答质量。
 
 ## 快速开始
 
-### 本地三分钟
-
-需要 Python 3.12。
+需要 Python 3.12。前端无需安装 Node.js 或执行打包命令。
 
 ```bash
-git clone https://github.com/hubooooooo/Personal-Agent.git && cd Personal-Agent
-python3 -m venv .venv && source .venv/bin/activate
+git clone https://github.com/leo-ai-pm/personal-eigent.git
+cd personal-eigent
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt -c requirements.lock
 cp .env.example .env
 ```
 
-打开 `.env`，至少填这两项：
+Windows PowerShell 使用 `.venv\Scripts\Activate.ps1` 激活虚拟环境。
 
-```bash
-AUTH_SECRET=     # 必填。生成：python -c "import secrets; print(secrets.token_hex(32))"
-KIMI_API_KEY=    # Moonshot / Kimi Key。不填也能启动，聊天走离线占位（mock），方便先看流程
+在 `.env` 中设置：
+
+```dotenv
+AUTH_SECRET=替换为随机生成的密钥
+KIMI_API_KEY=替换为你的模型APIKey
 ```
 
-启动：
+`AUTH_SECRET` 必填，可用以下命令生成：
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8787
+python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-| 页面 | 地址 |
+`KIMI_API_KEY` 可暂时留空以体验离线流程。使用其他服务商时，配置 `LLM_FAST_*`、`LLM_STRONG_*`，详见 [模型网关](docs/llm-gateway.md)。模型名称、接口地址和 Key 需要与服务商实际提供的模型对应。
+
+启动服务：
+
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8787
+```
+
+| 入口 | 地址 |
 |------|------|
-| 对话 | http://127.0.0.1:8787/ |
-| 健康检查 | http://127.0.0.1:8787/health |
-| 管理后台（需管理员令牌） | http://127.0.0.1:8787/admin |
+| 个人助手 | [http://127.0.0.1:8787/](http://127.0.0.1:8787/) |
+| 健康检查 | [http://127.0.0.1:8787/health](http://127.0.0.1:8787/health) |
+| API 文档 | [http://127.0.0.1:8787/docs](http://127.0.0.1:8787/docs) |
+| 管理后台 | [http://127.0.0.1:8787/admin](http://127.0.0.1:8787/admin)，需配置管理员令牌 |
 
-样例配置默认 FAST / STRONG 两档都走 Kimi（`kimi-k2.6` / `kimi-k3`）。换 DeepSeek、通义、OpenAI 或任何 OpenAI 兼容接口，只改 `.env`，见 [docs/llm-gateway.md](docs/llm-gateway.md)。
+默认数据保存在 `DATA_DIR` 指定目录（本地默认 `./data`），请保留该目录和用于签名、加密的密钥。填写过的 `.env` 不应提交到 Git。
 
 ### Docker
 
+先按上文填写 `.env`，再运行：
+
 ```bash
-docker build -t personal-agent .
-docker run --rm -p 8787:8787 -e AUTH_SECRET=换成随机串 -e KIMI_API_KEY=你的key personal-agent
+docker build -t personal-eigent .
+docker run --rm -p 127.0.0.1:8787:8787 --env-file .env \
+  -e DATA_DIR=/app/data -v personal-eigent-data:/app/data personal-eigent
 ```
 
-### Render 一键部署
-
-点上方 **Deploy to Render** 按钮，或在 Render 新建 Blueprint 选本仓库。免费实例没有持久盘，重启会清空 SQLite 数据，正式使用请挂盘。详见 [docs/deploy.md](docs/deploy.md)。
-
-## 工作原理
-
-```mermaid
-flowchart LR
-    subgraph 入口
-        W[网页对话]
-        F[飞书长连接]
-        X[微信 · OpenClaw 桥]
-    end
-    W & F & X --> G["渠道网关<br/>入站归一 · 绑定检查 · 隐私拦截"]
-    G --> R[LangGraph Router]
-    R --> C[chat]
-    R --> D[draft → confirm]
-    R --> P[profile]
-    C & D & P --> T["工具注册表<br/>风险等级 · 确认门禁 · 超时 · 审计"]
-    T --> L["LLM 网关<br/>FAST / STRONG · 模型链降级"]
-    T --> M[("记忆<br/>档案 · 情节 · 摘要 · 可选向量")]
-    C & D & P --> H["出站护栏<br/>防泄露 · 脱敏 · 轨迹日志"]
-    H --> G
-```
-
-| 层 | 实现 | 说明 |
-|----|------|------|
-| 编排 | LangGraph，`app/graph.py` → `app/agent/router.py` → `app/agent/subgraphs/` | 三个子图：chat / draft+confirm / profile。`run_action` 是唯一入口 |
-| 工具 | `app/agent/tool_registry.py` | 一个装饰器注册；风险等级决定是否需要确认，`external` 一律需要。清单见 [docs/tools.md](docs/tools.md) |
-| 记忆 | `app/agent/memory/` | 工作记忆 = LangGraph checkpoint；档案 = SQLite 事实；情节 = `episodic_events`（关键词 / 标签）；后台对话摘要；向量检索可选 |
-| 模型 | `app/gateway/` | task → FAST / STRONG → 有序模型链；失败、超时、429、空内容自动降级；OpenAI 兼容 + Anthropic |
-| 渠道 | `app/channels/` | Web / 飞书 / OpenClaw 统一走 `gateway.py`，共用同一个 agent thread，分别渲染为网页卡片 / 飞书卡片 / 微信文本菜单 |
-| 主动 | `app/agent/schedules/` `proactive/` | 调度器默认关；一次性提醒、自定义只读任务，结果进收件箱并推送到已绑定渠道 |
-| 护栏 | `app/agent/harness/` `app/privacy.py` | 进图前的隐私门、出站防泄露、轨迹脱敏、管理员鉴权 |
-| 提示词 | `app/prompts/<name>/vN.md` | 版本化文件，哈希被测试锁定；改提示词新建 v2 而不是改 v1 |
-| 存储 | SQLite 默认 | 设 `DATABASE_URL` 切到 Postgres，带行级安全（RLS），见 [docs/postgres-rls.md](docs/postgres-rls.md) |
-
-更完整的图和设计取舍：[docs/agent-stack.md](docs/agent-stack.md) · [docs/技术架构.md](docs/技术架构.md)（英文版 [tech-architecture.md](docs/tech-architecture.md)）· Mermaid 源图 [docs/mmd/](docs/mmd/)。
-
-## 多渠道接入
-
-**两个渠道默认都关。** 所有渠道走同一个网关：入站归一 → 绑定检查 → 隐私拦截 → 同一个 agent thread → 渲染 → 出站。
-
-| 渠道 | 开关 | 接入方式 |
-|------|------|----------|
-| 飞书 | `FEISHU_ENABLED=1` + `FEISHU_APP_ID` / `FEISHU_APP_SECRET` | 官方 SDK 长连接，**不需要公网地址**。见 [docs/feishu-长连接.md](docs/feishu-长连接.md) |
-| 微信 | `OPENCLAW_WECHAT_ENABLED=1` + `OPENCLAW_WEBHOOK_TOKEN` | OpenClaw Gateway + [桥接插件](integrations/openclaw-personal-agent-bridge/README.md) |
-| QQ 等 | 未实现 | 只留了 `ChannelAdapter` 接口（`app/channels/qq.py`），按 [CONTRIBUTING 第三层](CONTRIBUTING.md#第三层加渠道两到三天) 补 |
-
-渠道里的三条规则：
-
-- **绑定走对话。** 未绑定用户发任何消息，都会收到一次性绑定链接（`/bind`）。用常用浏览器打开并点「确认绑定」，渠道账号即绑到该浏览器的网页会话，共用档案和记忆，无需密码。
-- **隐私不进聊天。** 手机号、邮箱、身份证、银行卡一律不在渠道里收集，改发网页安全通道链接（`/sandbox`）。
-- **草稿只发预览。** 渠道里附「在网页查看完整草稿」链接；确认 / 拒绝在飞书是卡片按钮，微信回数字 `1` / `2`。
-
-细节见 [docs/channels.md](docs/channels.md)。
-
-## 安全与隐私
-
-这些不是「建议」，而是有测试守着的不变量，改动前请读 [CONTRIBUTING 第 3 节「不要动的东西」](CONTRIBUTING.md#3-不要动的东西)。
-
-- **身份只来自服务端签发的会话。** 每个 `/api` 调用的 `user_id` 只从签名 Cookie / Token 推导，从不信任请求体。`AUTH_SECRET` 缺失时所有 `/api` 返回 503。
-- **确认门禁。** 草稿、定时任务的创建 / 修改 / 删除都走确认卡；外部工具需要一次性、参数绑定的确认凭证。确认卡不过期，后点覆盖先点。
-- **出站防泄露。** 所有出站文本过滤密钥、系统提示词原文、他人数据和隐私沙盒值；检查失败 fail closed（`E_GUARD_UNAVAILABLE`），节点异常只返回 `E_NODE_FAILED`。
-- **隐私门在图之前。** 密码、手机号、身份证在进入 LangGraph 之前就被拦下，转到加密的安全输入区（Fernet，支持密钥轮换，API 从不返回明文）。
-- **网页内容是不可信数据。** 抓取结果带 `shared.untrusted_data` 规则进提示词，防提示注入有专门测试。
-- **预算与失控检测。** 每个任务按难度分档限制步数 / 时长 / token / 费用，近限额时收尾，超限给「继续」卡；每用户有日 / 月费用上限。
-- **轨迹日志。** 每个图节点一行：输入摘要、工具、参数、结果摘要、耗时、模型档位、token 估算、护栏命中；入库前统一脱敏，用户 / 线程以 HMAC 假名出现。
-- **金标回归。** `tests/golden/` 覆盖安慰、危机、草稿、泄露、轨迹鉴权。安全类必须零失败；质量类与 `baseline.json` 比较。
+命名卷保存数据库等运行数据。云端可使用仓库内的 Render Blueprint，配置步骤和持久化说明见 [部署指南](docs/deploy.md)。
 
 ## 配置
 
-完整键名与注释见 [`.env.example`](.env.example)。**不要提交填好的 `.env`。**
+完整配置说明见 [`.env.example`](.env.example)。
 
-| 想要 | 需要填 |
+| 场景 | 配置项 |
 |------|--------|
-| 跑起来 | `AUTH_SECRET` |
-| 真模型对话 | `KIMI_API_KEY`，或 `LLM_FAST_*` / `LLM_STRONG_*` 指向任意 OpenAI 兼容接口 |
-| 安全输入区可用 | `SECRETS_FERNET_KEY` |
-| 接飞书 / 微信 | `PUBLIC_BASE_URL`（HTTPS）+ 对应渠道开关，见上表 |
-| 定时任务与提醒 | `PROACTIVE_ENABLED=1`、`PROACTIVE_TZ` |
-| 管理后台与轨迹查询 | `HARNESS_ADMIN_TOKENS`（`name:token[:scope]`，≥16 位） |
-| 向量记忆 | `MEMORY_VECTOR_ENABLED=1`（默认关） |
-| Langfuse 可观测性 | `LANGFUSE_ENABLED=1` + Host / Public Key / Secret Key，见 [docs/langfuse.md](docs/langfuse.md) |
-| Postgres | `DATABASE_URL`、`SYSTEM_DATABASE_URL` |
+| 浏览器会话 | `AUTH_SECRET` |
+| 真实模型对话 | `KIMI_API_KEY`，或 `LLM_FAST_BASE_URL/MODEL/API_KEY` 与 `LLM_STRONG_*` |
+| 加密安全输入区 | `SECRETS_FERNET_KEY` |
+| 定时任务和提醒 | `PROACTIVE_ENABLED=1`、`PROACTIVE_TZ` |
+| 飞书 | `FEISHU_ENABLED=1`、`FEISHU_APP_ID`、`FEISHU_APP_SECRET`、`PUBLIC_BASE_URL` |
+| 微信桥接 | `OPENCLAW_WECHAT_ENABLED=1`、`OPENCLAW_*`、`PUBLIC_BASE_URL` |
+| 管理后台 | `HARNESS_ADMIN_TOKENS`，格式 `name:token[:scope]`，令牌至少 16 位 |
+| 向量记忆 | `MEMORY_VECTOR_ENABLED=1`，及对应嵌入服务配置 |
+| Langfuse | `LANGFUSE_ENABLED=1`，及 Host、Public Key、Secret Key |
+| PostgreSQL | `DATABASE_URL`、`SYSTEM_DATABASE_URL`，并按文档执行 RLS 迁移 |
 
-<details>
-<summary>按分组看关键键</summary>
+飞书、微信、主动调度、向量记忆和 Langfuse 默认关闭。渠道绑定和安全输入链接需要用户可访问的 HTTPS `PUBLIC_BASE_URL`；飞书长连接本身不需要公开 webhook。
 
-| 分组 | 关键键 |
-|------|--------|
-| LLM | `KIMI_API_KEY`；`LLM_FAST_BASE_URL/MODEL/API_KEY`、`LLM_STRONG_*`、`LLM_STRONG_FALLBACK_MODEL`；多模型链 `LLM_FAST_CHAIN` / `LLM_STRONG_CHAIN` 或 `LLM_CONFIG_FILE` |
-| 会话 | `AUTH_SECRET`（必填） |
-| 渠道公共 | `PUBLIC_BASE_URL`、`CHANNEL_ADMIN_TOKEN`、`CHANNEL_BIND_TTL_SECONDS`、`CHANNEL_SANDBOX_TTL_SECONDS` |
-| 飞书 | `FEISHU_ENABLED`、`FEISHU_APP_ID`、`FEISHU_APP_SECRET`、`FEISHU_BIND_OPEN_IDS` |
-| 微信 | `OPENCLAW_WECHAT_ENABLED`、`OPENCLAW_WEBHOOK_TOKEN`、`OPENCLAW_GATEWAY_URL`、`OPENCLAW_GATEWAY_TOKEN` |
-| 安全保存 | `SECRETS_FERNET_KEY`（逗号分隔可轮换） |
-| 预算 | `AGENT_BUDGET_<SIMPLE\|MEDIUM\|HARD>_<STEPS\|SECONDS\|TOKENS\|COST>`、`AGENT_COST_CAP_*`、`AGENT_MAX_REDRAFTS` |
-| 主动调度 | `PROACTIVE_ENABLED`、`PROACTIVE_TZ`、`PROACTIVE_TICK_SECONDS` |
-| Harness | `HARNESS_ADMIN_TOKENS`、`HARNESS_ID_HMAC_KEY`、`PII_BACKEND`（regex / presidio / gliner）、`PRIVACY_SANDBOX_VALUES`、`TRACE_WRITE_MODE` |
-| 可观测性 | `LANGFUSE_ENABLED`、`LANGFUSE_HOST`、`LANGFUSE_PUBLIC_KEY`、`LANGFUSE_SECRET_KEY`、`LLM_PRICES_JSON` |
-| 记忆 | `MEMORY_VECTOR_ENABLED`、`INTENT_SCORING_MODE`、`SILICONFLOW_API_KEY` |
+## 身份与使用边界
 
-</details>
+- **使用浏览器会话识别用户。** 服务端签发会话 Cookie，当前没有常规的邮箱密码注册、登录或找回账号流程。换浏览器、清除 Cookie 或会话失效，不能依靠输入姓名找回原档案；界面中的“重新开始”会使用新会话。
+- **草稿不会自动对外发送。** 当前没有替用户发邮件、发消息、提交外部表单、登录网站或无人值守操作的能力。
+- **需要确认的动作保留确认步骤。** 草稿、定时任务等使用确认卡；页面更新不绕过身份校验和一次性确认凭证。
+- **敏感信息通过专用入口处理。** 聊天中的敏感内容会触发分流；安全保存依赖 `SECRETS_FERNET_KEY`。模型仍可能出错，重要内容应自行核对。
+- **QQ 接入尚未实现。** 当前仅预留渠道接口；飞书和微信需要各自的凭据及接入配置。
+- **PostgreSQL 不能替代所有本地存储。** 业务数据支持 PostgreSQL 与 RLS，审计和 LangGraph checkpoint 仍使用 SQLite；部署时仍须考虑本地数据持久化。
 
-## HTTP API
+## 技术结构
 
-<details>
-<summary>接口摘要（点开）</summary>
+```text
+app/
+  main.py              HTTP 路由与静态页面入口
+  graph.py             LangGraph 编排入口
+  agent/               意图路由、工具、记忆、定时任务与护栏
+  gateway/             模型配置、FAST / STRONG 分档与失败降级
+  channels/            Web、飞书与微信渠道适配
+  data_access/         数据访问与用户隔离
+  prompts/             版本化提示词
+static/                HTML、CSS、原生 JavaScript 与本地字体
+tests/                 单元、集成与金标回归测试
+docs/                  架构、接口、配置和部署说明
+```
 
-| 路径 | 说明 |
+模型请求经网关选择对应档位和模型链。对话与任务由 LangGraph 路由到相应子图，调用记忆和工具；需要用户决定时返回确认卡。输出经过护栏处理，再交给网页或已绑定渠道展示。
+
+### 主要 API
+
+| 接口 | 用途 |
 |------|------|
-| `POST /api/session` | 签发 / 刷新网页会话 |
-| `GET /health` · `GET /api/capabilities` · `GET /api/tools` | 网关与通道状态、能力清单、工具列表 |
-| `POST /api/chat` | 对话；写作请求返回 `awaiting_confirm` + `task_card`（`draft_confirm`） |
-| `POST /api/draft` | 直接发起草稿（`request`） |
-| `POST /api/confirm/{thread_id}/token` · `POST /api/confirm` | 一次性确认凭证 + 确认 / 拒绝（可带 `edits` / `reason`） |
-| `POST /api/continue` | 预算用尽后继续任务 |
-| `GET/POST /api/profile` | 通用档案（name / city / tz / occupation / interests / preferences / facts） |
-| `GET /api/memory/{user_id}` · `/card` · facts / events · `/forget` | 记忆查看与编辑 |
-| `GET/POST/DELETE /api/secrets` | 安全输入区（从不返回明文） |
-| `/api/schedules*` | 定时任务 CRUD、确认卡决定、运行历史 |
-| `GET /api/proactive/pending` · `POST .../dismiss` | 应用内提醒收件箱 |
-| `GET /bind` · `POST /api/channels/bind/complete` · `GET /sandbox` · `POST /api/sandbox/submit` | 渠道绑定与隐私安全通道 |
-| `POST /webhooks/feishu` · `POST /webhooks/openclaw/wechat` | 渠道入站 |
-| `POST /api/feedback` | 对话气泡下的 👍 / 👎 |
-| `GET /api/admin/traces` · `/api/admin/audit` · `/api/admin/feedback` · `/api/admin/users*` | 管理接口（管理员令牌，按 scope 授权） |
+| `POST /api/session` | 创建或刷新浏览器会话 |
+| `POST /api/chat`、`POST /api/draft` | 对话与草稿 |
+| `POST /api/confirm/{thread_id}/token`、`POST /api/confirm` | 获取一次性凭证并提交确认或拒绝 |
+| `POST /api/continue` | 继续达到预算限制的任务 |
+| `GET /api/profile/{user_id}`、`POST /api/profile` | 读取与更新个人档案 |
+| `/api/memory/{user_id}*` | 查看、编辑与遗忘记忆 |
+| `/api/schedules*`、`/api/proactive/pending` | 定时任务与提醒收件箱 |
+| `/api/secrets*` | 加密保存与脱敏列表 |
+| `/api/channels/*`、`/webhooks/*` | 渠道绑定与消息接入 |
+| `/api/admin/*` | 受管理员权限保护的轨迹、审计、反馈与用户管理 |
 
-每个 `/api/*` 响应带 `X-Trace-Id`。所有路由都在 `app/main.py`，定时任务与管理后台分别在 `app/agent/schedules/api.py` 和 `app/admin/api.py`。
+用户身份以服务端验证的 Cookie / Token 为准，不能通过修改请求里的 `user_id` 切换用户。详细参数以运行中的 `/docs` 和各模块文档为准。
 
-</details>
-
-## 测试
-
-测试永远是 mock 模式：`tests/conftest.py` 会删掉环境里所有 `*_API_KEY` 并禁止加载 `.env`，本地有 Key 也不会花额度。
+## 开发与验证
 
 ```bash
 pip install -r requirements-dev.txt -c requirements.lock
-python -m pytest -q                                              # 单元 + 集成
-AUTH_SECRET=x python tests/golden/run_golden.py --mode mock      # 金标回归（CI 默认）
-python tests/golden/run_golden.py --mode live                    # 真实模型（需 Key）
-python scripts/harness_golden.py                                 # CI 门禁入口
+python -m pytest -q
+AUTH_SECRET=x INTENT_SCORING_MODE=rules python tests/golden/run_golden.py --mode mock --judge-gate
+AUTH_SECRET=x python tests/golden/run_hybrid.py --mode mock --judge-gate
+python scripts/harness_golden.py
 ```
 
-接上真实模型后，`python scripts/live_smoke.py` 会把主流程跑一遍并生成 [docs/live-smoke-report.md](docs/live-smoke-report.md)，作为「正常长什么样」的参照。评审 rubric（共情 / 危机处理）：`python -m app.evals.cli`。
+`pytest` 的测试配置会清除模型 API Key 并禁用 `.env` 加载，使用 mock 模式。真实模型验证需显式运行 `python scripts/live_smoke.py` 或金标脚本的 `--mode live`，并配置有效 Key；这类运行会调用模型服务。
 
-## 二次开发
+前端修改集中在 `static/`，没有构建步骤。调整样式和布局时需保留 API 字段、会话机制、确认流程和敏感输入分流。扩展工具、渠道、记忆或编排的入口见 [开发指南](CONTRIBUTING.md)。
 
-[CONTRIBUTING.md](CONTRIBUTING.md) 是给新人的地图，按改动深度分五层，每层标出入口文件、必须同步的契约测试和不能动的安全不变量：
+## 文档
 
-| 层 | 做什么 | 大约 |
-|----|--------|------|
-| 1 换皮 | 提示词、文案、样式、换模型厂商 | 半天 |
-| 2 加工具 | 一个 `@tool` 装饰器，确认卡 / 凭证 / 超时 / 审计 / `/api/tools` 自动跟上 | 一到两天 |
-| 3 加渠道 | 实现 `ChannelAdapter`，接入统一网关 | 两到三天 |
-| 4 改记忆 | 换检索、加向量、改写入路径 | 三到五天 |
-| 5 改编排 | 加子图、改路由 | 一周以上 |
-
-加一个工具长这样：
-
-```python
-from app.agent.tool_registry import tool
-
-@tool("weather_lookup", risk_level="read",
-      description="查询城市当前天气。",
-      when_to_use="用户问天气或出门穿衣时使用。",
-      when_not_to_use="不用于历史气候数据。",
-      timeout=20)
-def weather_lookup(city: str, user_id: str = "") -> dict:
-    ...
-```
-
-可选的领域指导包（Skills）放在 `app/agent/skills/`，只提供文本指导，不授予工具、不改权限，见 [docs/skills.md](docs/skills.md)。
-
-## 文档索引
-
-| 主题 | 文档 |
+| 主题 | 说明 |
 |------|------|
-| 整体栈与图 | [agent-stack.md](docs/agent-stack.md) · [技术架构.md](docs/技术架构.md) · [mmd/](docs/mmd/) |
-| 工具 | [tools.md](docs/tools.md)（清单）· [tool-registry.md](docs/tool-registry.md)（机制）· [model-tool-selection.md](docs/model-tool-selection.md) |
-| 模型网关 | [llm-gateway.md](docs/llm-gateway.md) · [llm_models.example.json](docs/llm_models.example.json) |
-| 记忆与上下文 | [context-assembly.md](docs/context-assembly.md) · [vector-memory-write.md](docs/vector-memory-write.md) · [intent-confidence-validation.md](docs/intent-confidence-validation.md) |
-| 渠道 | [channels.md](docs/channels.md) · [feishu-长连接.md](docs/feishu-长连接.md) · [OpenClaw 桥](integrations/openclaw-personal-agent-bridge/README.md) |
-| 定时任务 | [schedules.md](docs/schedules.md) |
-| 部署与运维 | [deploy.md](docs/deploy.md) · [postgres-rls.md](docs/postgres-rls.md) · [langfuse.md](docs/langfuse.md) · [admin.md](docs/admin.md) |
-| 界面 | [DESIGN.md](DESIGN.md)（chat-only 单页，浅色，Geist 自托管） |
+| 架构 | [Agent 栈](docs/agent-stack.md) · [技术架构](docs/技术架构.md) |
+| 模型 | [模型网关](docs/llm-gateway.md) · [多模型配置示例](docs/llm_models.example.json) |
+| 工具 | [工具清单](docs/tools.md) · [注册机制](docs/tool-registry.md) |
+| 记忆 | [上下文组装](docs/context-assembly.md) · [向量记忆](docs/vector-memory-write.md) |
+| 渠道 | [渠道说明](docs/channels.md) · [飞书长连接](docs/feishu-长连接.md) · [微信桥接](integrations/openclaw-personal-agent-bridge/README.md) |
+| 任务 | [定时任务](docs/schedules.md) |
+| 运维 | [部署](docs/deploy.md) · [PostgreSQL / RLS](docs/postgres-rls.md) · [管理后台](docs/admin.md) · [Langfuse](docs/langfuse.md) |
 
-## 现状与边界
+## 许可
 
-- 当前版本 0.8.2，SQLite 单机即可跑，Postgres + RLS 已可用但未在生产长期验证。
-- QQ 渠道只有接口位；向量记忆、主动调度、两个渠道、Langfuse 全部默认关闭，按需打开。
-- Render 免费实例无持久盘，仅适合演示。
-- 已知粗糙处与常见坑见 [CONTRIBUTING 第 5、6 节](CONTRIBUTING.md#5-已知的粗糙处)。
-
-## License
-
-[MIT](LICENSE)
+代码采用 [MIT 许可证](LICENSE)。随附的 Geist / Geist Mono 字体采用 [SIL Open Font License 1.1](static/fonts/OFL.txt)。

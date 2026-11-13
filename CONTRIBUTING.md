@@ -1,10 +1,14 @@
-# 二次开发指南
+# Personal Eigent个人助手开发指南
 
-写给拿到这个仓库、准备在上面二开或魔改的开发者。这不是 API 文档，是一张地图：告诉你改什么去哪里、改完要同步哪些契约测试、哪些东西不要动。各模块的细节仍在 `docs/` 里，本文只负责把你带到正确的门口。
+本文说明代码入口、扩展方式和需要保留的接口契约。各模块的具体实现与配置见 `docs/`。
+
+当前界面使用冷白与湖蓝配色，视觉规范见 [DESIGN.md](DESIGN.md)。品牌与界面更新集中在 `static/`，保留现有页面布局、API、Agent 编排、记忆存储和确认流程。修改样式时，请同时检查对话页、档案与任务面板、渠道绑定、安全输入区和管理后台。
 
 ## 0. 先跑起来
 
 ```bash
+git clone https://github.com/leo-ai-pm/personal-eigent.git
+cd personal-eigent
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt -c requirements.lock
 cp .env.example .env
@@ -21,7 +25,7 @@ AUTH_SECRET=x python tests/golden/run_golden.py --mode mock --judge-gate   # 金
 
 两点需要知道：
 
-- **测试永远是 mock 模式。** `tests/conftest.py` 会把环境里所有 `*_API_KEY` 删掉，并禁止加载 `.env`。你本地有 Key 也不影响测试结果，也不会花你的额度，这是故意的。
+- **pytest 使用 mock 模式。** `tests/conftest.py` 会把环境里所有 `*_API_KEY` 删掉，并禁止加载 `.env`。真实模型测试需要显式运行 live 脚本并配置 Key，可能产生模型调用费用。
 - **不填模型 Key 也能跑。** 聊天回离线占位、草稿是占位稿。所有流程、确认卡、记忆、定时任务都能走通。先用 mock 模式熟悉结构，再接真实模型。
 
 ## 1. 一张地图
@@ -60,7 +64,7 @@ docs/                     各模块说明；docs/agent-stack.md 是最完整的�
 
 - **提示词**：`app/prompts/<名字>/v1.md`。不要改 `v1.md`，`tests/unit/test_prompt_files.py` 锁了它的哈希。新建 `v2.md`，然后把调用处的 `load_prompt("chat.persona", "v1")` 改成 `"v2"`。模板里的 `{{untrusted_data_rule}}` 这类槽位必须保留。
 - **人格与语气**：主要在 `chat.persona` 和 `draft.text` 两个提示词。
-- **前端文案和样式**：`static/js/*.js` 里的字符串、`static/design.css`、`static/chat.css`、`static/index.html`。没有打包步骤。
+- **前端文案和样式**：`static/js/*.js` 里的字符串、`static/design.css`、`static/chat.css`、`static/index.html`；渠道页面在 `static/bind.html` 和 `static/sandbox.html`，管理后台在 `static/admin/`，品牌图形在 `static/brand-mark.svg`。没有打包步骤。只调整视觉时不需要改提示词、模型配置或后端代码。
 - **换模型厂商**：只改 `.env`。任何 OpenAI 兼容接口都行，见 `docs/llm-gateway.md`。单 Key 时两档会自动共用。
 
 ### 第二层：加工具（一到两天，最有价值的一层）
@@ -160,7 +164,7 @@ python scripts/smoke_proactive_memory.py
 
 - **`app/main.py` 有 1800 行**，54 个路由堆在一起。`app/agent/schedules/api.py` 已经示范了用 `APIRouter` 拆出去的写法，把其余路由按 chat / confirm / memory / secrets / channels 拆成 `app/api/*.py` 是一个很好的第一个二开练习。
 - **前端是原生 JS**，没有组件框架。好处是零依赖，坏处是大改 UI 费劲。换 React / Vue 需要重写前端，但后端 API 不用动，`static/js/api.js` 列出了全部调用。
-- **只有 SQLite 在本地完整验证过。** Postgres 和 RLS 有代码、文档和一个 CI 任务，但作者没有在本地跑过真实 Postgres。
+- **生产验证仍需部署者补足。** SQLite 是默认存储；Postgres 和 RLS 有代码、文档和 CI 任务，但不能据此视为已完成长期生产验证。审计与 LangGraph checkpoint 仍使用本地 SQLite。
 - **意图评分的 hybrid 模式**依赖 SiliconFlow 的向量接口，需要先用 `scripts/embed_intents.py` 生成缓存。默认 `rules` 模式不需要。
 - **飞书和微信渠道**需要各自的凭据才能真实验证，mock 模式下只能走假 payload 测试。
 - `docs/tech-architecture.md` 和 `docs/技术架构.md` 内容重复，保留了两份。

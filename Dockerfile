@@ -1,4 +1,4 @@
-# Personal Agent — production image for Render / any container host
+# Personal Eigent个人助手 — production image for Render / any container host
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN apt-get update \
 COPY requirements.txt requirements.lock ./
 RUN pip install --upgrade pip && pip install -r requirements.txt -c requirements.lock
 
-COPY VERSION ./
+COPY VERSION LICENSE ./
 COPY app ./app
 COPY static ./static
 COPY scripts ./scripts

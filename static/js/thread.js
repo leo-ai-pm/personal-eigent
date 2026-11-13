@@ -146,7 +146,7 @@ export function collapsible(text, cls = "bubble-text", { markdown = false } = {}
 }
 
 function avatar() {
-  return h("span", { class: "msg-avatar", "aria-hidden": "true", text: "助" });
+  return h("span", { class: "msg-avatar", "aria-hidden": "true", text: "E" });
 }
 
 export function userMessage(data, { animate = true, scroll = true } = {}) {
@@ -212,12 +212,12 @@ export function assistantMessage(text, { scroll = true, animate = true, speak = 
   const row = h("div", { class: `msg msg-assistant${animate ? " enter" : ""}` }, [
     avatar(),
     h("div", { class: "bubble bubble-assistant" }, [
-      h("span", { class: "sr-only", text: "小助：" }),
+      h("span", { class: "sr-only", text: "Personal Eigent：" }),
       collapsible(text, "bubble-text", { markdown: true }),
       onFeedback ? feedbackBar(feedback, onFeedback) : null,
     ]),
   ]);
-  if (speak) announce(`小助：${text}`);
+  if (speak) announce(`Personal Eigent：${text}`);
   return append(row, { scroll });
 }
 
@@ -281,11 +281,11 @@ export function renderHero({ onChip, onMemory }) {
   const chip = (iconName, label, onClick) =>
     h("button", { type: "button", class: "hero-chip", onClick }, [icon(iconName), h("span", { text: label })]);
   const hero = h("section", { class: "hero enter", id: "hero", "aria-labelledby": "heroTitle" }, [
-    h("div", { class: "hero-mark", "aria-hidden": "true", text: "助" }),
-    h("h2", { id: "heroTitle", text: "今天有什么我可以帮忙的？" }),
+    h("div", { class: "hero-mark", "aria-hidden": "true", text: "E" }),
+    h("h2", { id: "heroTitle", text: "今天，先从哪件事开始？" }),
     h("p", {
       class: "hero-sub",
-      text: "我是小助。直接和我聊就行：告诉我你的事，我会记住；要写邮件、消息或文章，我先出草稿，你确认后才算定稿。",
+      text: "我是你的 Personal Eigent个人助手。聊聊你的想法，我会记住重要的事；需要写作时，我会先出草稿，等你确认。",
     }),
     h("p", {
       class: "hero-sub",
