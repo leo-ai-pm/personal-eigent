@@ -19,3 +19,18 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Personal Eigent interface and documentation modifications:
+Copyright (c) 2026 leo-ai-pm, under the same MIT License.
+
+Source provenance (informational; does not alter the MIT terms above):
+This repository directly incorporates the Personal Agent code baseline from:
+https://github.com/hubooooooo/Personal-Agent
+Baseline version: 0.8.2
+Baseline commit: de09b4ab769f75740139bbc5d336bd6e5e29c0e3
+Inherited code retains its original authorship; the interface and documentation
+modifications are identified separately above.
+
+Bundled third-party assets:
+Geist and Geist Mono fonts are distributed under the SIL Open Font License 1.1.
+Their complete copyright and license notices are retained in static/fonts/OFL.txt.

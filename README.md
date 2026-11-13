@@ -188,4 +188,4 @@ python scripts/harness_golden.py
 
 ## 许可
 
-代码采用 [MIT 许可证](LICENSE)。随附的 Geist / Geist Mono 字体采用 [SIL Open Font License 1.1](static/fonts/OFL.txt)。
+代码采用 [MIT 许可证](LICENSE)，随附字体的许可说明也收录于该文件。
