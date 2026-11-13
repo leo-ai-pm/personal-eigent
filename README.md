@@ -2,9 +2,7 @@
 
 有长期记忆的个人 AI 助手。通过对话管理个人信息、起草内容、设置提醒，在执行需要确认的任务前展示确认卡。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](Dockerfile)
-[![Version](https://img.shields.io/badge/version-0.8.2-informational.svg)](VERSION)
 
 Python 3.12 · FastAPI · LangGraph · SQLite / PostgreSQL · 原生 JavaScript
 
@@ -185,7 +183,3 @@ python scripts/harness_golden.py
 | 渠道 | [渠道说明](docs/channels.md) · [飞书长连接](docs/feishu-长连接.md) · [微信桥接](integrations/openclaw-personal-agent-bridge/README.md) |
 | 任务 | [定时任务](docs/schedules.md) |
 | 运维 | [部署](docs/deploy.md) · [PostgreSQL / RLS](docs/postgres-rls.md) · [管理后台](docs/admin.md) · [Langfuse](docs/langfuse.md) |
-
-## 许可
-
-代码采用 [MIT 许可证](LICENSE)，随附字体的许可说明也收录于该文件。
