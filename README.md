@@ -1,4 +1,4 @@
-# Personal Eigent个人助手
+# Personal Agent
 
 有长期记忆的个人 AI 助手。通过对话管理个人信息、起草内容、设置提醒，在执行需要确认的任务前展示确认卡。
 
@@ -10,9 +10,9 @@ Python 3.12 · FastAPI · LangGraph · SQLite / PostgreSQL · 原生 JavaScript
 
 ## 界面预览
 
-![Personal Eigent个人助手对话界面](docs/screenshots/home.png)
+![Personal Agent对话界面](docs/screenshots/home.png)
 
-![Personal Eigent个人助手个人档案](docs/screenshots/profile.png)
+![Personal Agent个人档案](docs/screenshots/profile.png)
 
 界面采用冷白与湖蓝配色，统一对话、个人档案、定时任务、渠道绑定、安全输入区与管理后台的视觉样式。本次更新保留现有布局，以及 Agent 编排、模型调用、记忆存储、身份校验和确认协议。
 
