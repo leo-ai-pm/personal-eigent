@@ -36,6 +36,16 @@ Python 3.12 · FastAPI · LangGraph · SQLite / PostgreSQL · 原生 JavaScript
 
 提醒、渠道和向量记忆需要单独配置并开启。没有模型 API Key 时，系统使用离线占位回复，可用于查看流程，不能据此评估真实模型的回答质量。
 
+## 工作流程
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/workflow-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/workflow-light.svg">
+  <img alt="Personal Agent 对话与草稿工作流程：检查身份和隐私，区分日常对话与写作请求，结合记忆回答或生成草稿，经确认后保存结果。" src="assets/workflow-light.svg" width="1200">
+</picture>
+
+图中展示日常对话和写作草稿两条常用路径。日常对话结合记忆直接回答；写作请求生成草稿并等待确认，拒绝后可在预算内按反馈重写。提醒、个人档案与渠道接入的配置见下文。
+
 ## 快速开始
 
 需要 Python 3.12。前端无需安装 Node.js 或执行打包命令。
